@@ -36,8 +36,9 @@ if before and after:
     score, diff = ssim(gray1, gray2, full=True)
     diff = (diff * 255).astype("uint8")
 
-    threshold_value = 255 - (sensitivity * 2)
-_, thresh = cv2.threshold(diff, threshold_value, 255, cv2.THRESH_BINARY_INV)
+    threshold_value = 255 - (sensitivity * 2) 
+    _, thresh = cv2.threshold(diff, threshold_value, 255, cv2.THRESH_BINARY_INV)
+
 
 
     kernel = np.ones((5,5), np.uint8)
@@ -64,5 +65,6 @@ _, thresh = cv2.threshold(diff, threshold_value, 255, cv2.THRESH_BINARY_INV)
     st.image(output, caption="Detected Damage Regions")
     st.success(f"Structural Similarity Score: {score:.4f}")
     st.warning(f"Estimated Damage Area: {percent:.2f}%")
+
 
 
