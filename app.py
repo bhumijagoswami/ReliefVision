@@ -23,6 +23,14 @@ if before and after:
     gray1 = cv2.cvtColor(img1, cv2.COLOR_RGB2GRAY)
     gray2 = cv2.cvtColor(img2, cv2.COLOR_RGB2GRAY)
 
+    # Remove bright cloud regions
+    _, cloud_mask1 = cv2.threshold(gray1, 220, 255, cv2.THRESH_BINARY)
+    _, cloud_mask2 = cv2.threshold(gray2, 220, 255, cv2.THRESH_BINARY)
+
+    gray1[cloud_mask1 == 255] = 0
+    gray2[cloud_mask2 == 255] = 0
+
+
     score, diff = ssim(gray1, gray2, full=True)
     diff = (diff * 255).astype("uint8")
 
@@ -53,3 +61,4 @@ if before and after:
     st.image(output, caption="Detected Damage Regions")
     st.success(f"Structural Similarity Score: {score:.4f}")
     st.warning(f"Estimated Damage Area: {percent:.2f}%")
+
