@@ -12,6 +12,10 @@ st.subheader("Satellite-Based Disaster Damage Assessment System")
 before = st.file_uploader("Upload Pre-Disaster Image", type=["jpg", "png"])
 after = st.file_uploader("Upload Post-Disaster Image", type=["jpg", "png"])
 sensitivity = st.slider("Damage Sensitivity", 0, 100, 50)
+disaster = st.selectbox(
+    "Select Disaster Type",
+    ["Flood", "Fire", "Earthquake"]
+)
 
 
 if before and after:
@@ -61,10 +65,39 @@ if before and after:
                           (x+w, y+h), (255, 0, 0), 2)
 
     percent = (changed_area / total_area) * 100
+    # Severity classification
+if percent < 30:
+    severity = "LOW"
+elif percent < 60:
+    severity = "MEDIUM"
+else:
+    severity = "HIGH"
+
+# Priority assignment
+if severity == "HIGH":
+    priority = "1 (Immediate)"
+elif severity == "MEDIUM":
+    priority = "2"
+else:
+    priority = "3"
 
     st.image(output, caption="Detected Damage Regions")
     st.success(f"Structural Similarity Score: {score:.4f}")
     st.warning(f"Estimated Damage Area: {percent:.2f}%")
+
+st.subheader("🚨 Alert System")
+
+st.write(f"Disaster Type: {disaster}")
+st.write(f"Severity Level: {severity}")
+st.write(f"Priority Level: {priority}")
+
+# Recommended action
+if severity == "HIGH":
+    st.error("Immediate rescue and medical support required")
+elif severity == "MEDIUM":
+    st.warning("Deploy monitoring and relief teams")
+else:
+    st.info("Low impact - monitor situation")
 
 
 
