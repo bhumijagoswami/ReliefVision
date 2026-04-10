@@ -66,38 +66,39 @@ if before and after:
 
     percent = (changed_area / total_area) * 100
     # Severity classification
-if percent < 30:
+    if percent < 30:
     severity = "LOW"
-elif percent < 60:
+    elif percent < 60:
     severity = "MEDIUM"
-else:
+    else:
     severity = "HIGH"
 
 # Priority assignment
-if severity == "HIGH":
+    if severity == "HIGH":
     priority = "1 (Immediate)"
-elif severity == "MEDIUM":
+    elif severity == "MEDIUM":
     priority = "2"
-else:
+    else:
     priority = "3"
+
 
     st.image(output, caption="Detected Damage Regions")
     st.success(f"Structural Similarity Score: {score:.4f}")
     st.warning(f"Estimated Damage Area: {percent:.2f}%")
 
-st.subheader("🚨 Alert System")
+    st.subheader("🚨 Alert System")
 
-st.write(f"Disaster Type: {disaster}")
-st.write(f"Severity Level: {severity}")
-st.write(f"Priority Level: {priority}")
+    st.write(f"Disaster Type: {disaster}")
+    st.write(f"Severity Level: {severity}")
+    st.write(f"Priority Level: {priority}")
 
-# Recommended action
-if severity == "HIGH":
-    st.error("Immediate rescue and medical support required")
-elif severity == "MEDIUM":
-    st.warning("Deploy monitoring and relief teams")
-else:
-    st.info("Low impact - monitor situation")
+    # Recommended action
+    if severity == "HIGH":
+     st.error("Immediate rescue and medical support required")
+    elif severity == "MEDIUM":
+     st.warning("Deploy monitoring and relief teams")
+    else:
+     st.info("Low impact - monitor situation")
 
 
 
