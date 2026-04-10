@@ -12,12 +12,14 @@ st.subheader("Satellite-Based Disaster Damage Assessment System")
 before = st.file_uploader("Upload Pre-Disaster Image", type=["jpg", "png"])
 after = st.file_uploader("Upload Post-Disaster Image", type=["jpg", "png"])
 sensitivity = st.slider("Damage Sensitivity", 0, 100, 50)
+
+# NEW: Disaster type selector
 disaster = st.selectbox(
     "Select Disaster Type",
     ["Flood", "Fire", "Earthquake"]
 )
 
-
+# MAIN LOGIC
 if before and after:
 
     img1 = np.array(Image.open(before).convert("RGB"))
@@ -36,21 +38,22 @@ if before and after:
     gray1[cloud_mask1 == 255] = 0
     gray2[cloud_mask2 == 255] = 0
 
-
+    # SSIM comparison
     score, diff = ssim(gray1, gray2, full=True)
     diff = (diff * 255).astype("uint8")
 
-    threshold_value = 255 - (sensitivity * 2) 
+    threshold_value = 255 - (sensitivity * 2)
     _, thresh = cv2.threshold(diff, threshold_value, 255, cv2.THRESH_BINARY_INV)
 
-
-
-    kernel = np.ones((5,5), np.uint8)
+    # Clean noise
+    kernel = np.ones((5, 5), np.uint8)
     thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
 
-    contours, _ = cv2.findContours(thresh.copy(),
-                                   cv2.RETR_EXTERNAL,
-                                   cv2.CHAIN_APPROX_SIMPLE)
+    contours, _ = cv2.findContours(
+        thresh.copy(),
+        cv2.RETR_EXTERNAL,
+        cv2.CHAIN_APPROX_SIMPLE
+    )
 
     output = img2.copy()
     total_area = 600 * 600
@@ -61,31 +64,40 @@ if before and after:
         if area > 500:
             changed_area += area
             x, y, w, h = cv2.boundingRect(c)
-            cv2.rectangle(output, (x, y),
-                          (x+w, y+h), (255, 0, 0), 2)
+            cv2.rectangle(output, (x, y), (x + w, y + h), (255, 0, 0), 2)
 
     percent = (changed_area / total_area) * 100
-    # Severity classification
+
+    # =========================
+    # NEW: Severity Classification
+    # =========================
     if percent < 30:
-    severity = "LOW"
+        severity = "LOW"
     elif percent < 60:
-    severity = "MEDIUM"
+        severity = "MEDIUM"
     else:
-    severity = "HIGH"
+        severity = "HIGH"
 
-# Priority assignment
+    # =========================
+    # NEW: Priority Assignment
+    # =========================
     if severity == "HIGH":
-    priority = "1 (Immediate)"
+        priority = "1 (Immediate)"
     elif severity == "MEDIUM":
-    priority = "2"
+        priority = "2"
     else:
-    priority = "3"
+        priority = "3"
 
-
+    # =========================
+    # OUTPUT DISPLAY
+    # =========================
     st.image(output, caption="Detected Damage Regions")
     st.success(f"Structural Similarity Score: {score:.4f}")
     st.warning(f"Estimated Damage Area: {percent:.2f}%")
 
+    # =========================
+    # ALERT SYSTEM
+    # =========================
     st.subheader("🚨 Alert System")
 
     st.write(f"Disaster Type: {disaster}")
@@ -94,11 +106,8 @@ if before and after:
 
     # Recommended action
     if severity == "HIGH":
-     st.error("Immediate rescue and medical support required")
+        st.error("Immediate rescue and medical support required")
     elif severity == "MEDIUM":
-     st.warning("Deploy monitoring and relief teams")
+        st.warning("Deploy monitoring and relief teams")
     else:
-     st.info("Low impact - monitor situation")
-
-
-
+        st.info("Low impact - monitor situation")
